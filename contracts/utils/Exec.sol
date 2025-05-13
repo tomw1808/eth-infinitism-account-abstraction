@@ -7,9 +7,6 @@ pragma solidity ^0.8.28;
  * Utility functions helpful when making different kinds of contract calls in Solidity.
  */
 library Exec {
-
-    error ContractCreationFailed();
-
    
     function call(
         address to,
