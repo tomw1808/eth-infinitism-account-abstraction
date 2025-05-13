@@ -26,6 +26,9 @@ abstract contract BaseAccount is IAccount {
 
     error ExecuteError(uint256 index, bytes error);
 
+    error ContractCreationFailed();
+
+
     /**
      * Return the account nonce.
      * This method returns the next sequential nonce.
@@ -50,6 +53,17 @@ abstract contract BaseAccount is IAccount {
         bool ok = Exec.call(target, value, data, gasleft());
         if (!ok) {
             Exec.revertWithReturnData();
+        }
+    }
+    /**
+     * execute a create call from the account.
+     */
+    function createContract(bytes calldata initCode) virtual external {
+        _requireForExecute();
+
+        address contractAddress = Exec.createContract(initCode);
+        if (contractAddress == address(0)) {
+            revert ContractCreationFailed();
         }
     }
 

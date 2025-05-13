@@ -8,6 +8,9 @@ pragma solidity ^0.8.28;
  */
 library Exec {
 
+    error ContractCreationFailed();
+
+   
     function call(
         address to,
         uint256 value,
@@ -18,6 +21,23 @@ library Exec {
             success := call(txGas, to, value, add(data, 0x20), mload(data), 0, 0)
         }
     }
+
+    function codeSize(address _addr) internal view returns (uint256 size) {
+        assembly { size := extcodesize(_addr) }
+    }
+
+
+    function createContract(
+        bytes memory initCode
+    ) internal returns (address newContract) {
+        assembly ("memory-safe") {
+            newContract := create(callvalue(), add(initCode, 0x20), mload(initCode))
+        }
+        if(codeSize(newContract) == 0) {
+            newContract = address(0);
+        }
+    }
+
 
     function staticcall(
         address to,
